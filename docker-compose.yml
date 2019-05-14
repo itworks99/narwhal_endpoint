@@ -1,0 +1,9 @@
+version: "0.2"
+
+services:
+  narwhal_endpoint:
+    image: narwhal_endpoint
+    build: .
+    ports:
+      - 514:514
+      - 6514:6514
