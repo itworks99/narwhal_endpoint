@@ -10,7 +10,7 @@ import os
 import msgpack
 import redis
 
-# REMOTE_REDIS_HOST_DEBUG = '192.168.1.14'
+REMOTE_REDIS_HOST_DEBUG = '192.168.1.14'
 
 VERSION = "0.2"
 DASH_LINE = "-----------------------------------------------------------------"
@@ -48,8 +48,8 @@ def load_configuration():
 
     try:
         configuration['REMOTE_REDIS_HOST'] = os.getenv('REMOTE_REDIS_HOST')
-        # if configuration['REMOTE_REDIS_HOST'] is None:
-        #     configuration['REMOTE_REDIS_HOST'] = REMOTE_REDIS_HOST_DEBUG
+        if configuration['REMOTE_REDIS_HOST'] is None:
+            configuration['REMOTE_REDIS_HOST'] = REMOTE_REDIS_HOST_DEBUG
         load_env_variable("TRANSMISSION_INTERVAL")
         load_env_variable("COMPRESSION_TYPE")
         load_env_variable("REMOTE_REDIS_HOST")
