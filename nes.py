@@ -146,7 +146,8 @@ if __name__ == "__main__":
         try:
             response = r.client_list()
             connected_to_redis = True
-            print("Connected to Redis. Listening on ports:")
+            print("Connected to Redis on " +
+                  configuration["REMOTE_REDIS_HOST"] + ". Listening on ports:")
             print(configuration["LOCAL_UDP_PORT_SYSLOG"])
             print(configuration["LOCAL_TLS_PORT_SYSLOG"])
             print(DASH_LINE)
@@ -157,6 +158,7 @@ if __name__ == "__main__":
             print("ERROR: The Redis server is unavailable.")
             print("Please check configuration or availability of the server.")
             print(DASH_LINE)
+
         if connected_to_redis:
             endpoint_name = socket.getfqdn()
             beginning_of_time_interval = time.monotonic_ns()
