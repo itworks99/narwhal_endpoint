@@ -5,8 +5,8 @@ services:
     image: narwhal_endpoint
     build: .
     ports:
-      - 514:514
-      - 6514:6514
+      - 514:514/udp
+      - 6514:6514/tcp
     entrypoint:
       - python3
       - nes.py

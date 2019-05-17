@@ -149,8 +149,7 @@ if __name__ == "__main__":
         except redis.ConnectionError:
             connected_to_redis = False
             print(DASH_LINE)
-            print("ERROR: The Redis server on " +
-                  configuration["REMOTE_REDIS_HOST"] + " is unavailable.")
+            print("ERROR: The Redis server is unavailable.")
             print("Please check configuration or availability of the server.")
             print(DASH_LINE)
 
