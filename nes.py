@@ -10,8 +10,6 @@ import os
 import msgpack
 import redis
 
-REMOTE_REDIS_HOST_DEBUG = '192.168.1.14'
-
 VERSION = "0.2"
 DASH_LINE = "-----------------------------------------------------------------"
 
@@ -48,8 +46,6 @@ def load_configuration():
 
     try:
         configuration['REMOTE_REDIS_HOST'] = os.getenv('REMOTE_REDIS_HOST')
-        if configuration['REMOTE_REDIS_HOST'] is None:
-            configuration['REMOTE_REDIS_HOST'] = REMOTE_REDIS_HOST_DEBUG
         load_env_variable("TRANSMISSION_INTERVAL")
         load_env_variable("COMPRESSION_TYPE")
         load_env_variable("REMOTE_REDIS_HOST")
@@ -94,8 +90,6 @@ class SyslogHandler(socketserver.BaseRequestHandler):
         socket = self.request[1]
 
         dt = datetime.now().isoformat(timespec='microseconds')
-
-        print(raw_message_data)
 
         if (time.monotonic_ns() -
                 beginning_of_time_interval) < send_data_interval:
