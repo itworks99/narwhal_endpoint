@@ -7,5 +7,6 @@ EXPOSE 6514/tcp
 WORKDIR /nes
 ADD . /nes
 
+ENTRYPOINT [ "/bin/ash" ]
 RUN python3 -m pip install -r requirements.txt
 CMD ["python3", "-m", "nes"]
