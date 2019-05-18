@@ -7,5 +7,5 @@ EXPOSE 6514/tcp
 WORKDIR /nes
 ADD . /nes
 
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
-CMD ["python3", "-m", "nes"]
+RUN ["chmod", "+x", "nes.sh"]
+ENTRYPOINT [ "nes.sh" ]
