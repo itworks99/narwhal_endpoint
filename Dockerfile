@@ -8,4 +8,5 @@ WORKDIR /nes
 ADD . /nes
 
 RUN ["chmod", "+x", "nes.sh"]
-ENTRYPOINT [ "nes.sh" ]
+ENTRYPOINT [ "ash" ]
+RUN ["ash", "nes.sh"]
