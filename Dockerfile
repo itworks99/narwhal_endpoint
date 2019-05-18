@@ -8,4 +8,5 @@ WORKDIR /nes
 ADD . /nes
 
 RUN ["chmod", "+x", "nes.sh"]
+RUN ["python3", "-m", "pip", "install", "-r", "requirements.txt"]
 CMD ["ash", "nes.sh"]
