@@ -9,4 +9,4 @@ ADD . /nes
 
 RUN ["chmod", "+x", "nes.sh"]
 RUN ["python3", "-m", "pip", "install", "-r", "requirements.txt"]
-ENTRYPOINT ["/usr/bin/env/ash", "/nes/nes.sh"]
+CMD ["ash", "nes.sh"]
