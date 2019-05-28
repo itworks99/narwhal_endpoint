@@ -15,7 +15,7 @@ DASH_LINE = "-----------------------------------------------------------------"
 
 configuration = {
     "TRANSMISSION_INTERVAL": 1,
-    "COMPRESSION_TYPE": 1,
+    "COMPRESSION_TYPE": 5,
     "REMOTE_REDIS_HOST": "",
     "REMOTE_REDIS_PORT": 6379,
     "REMOTE_REDIS_DB": 8,
