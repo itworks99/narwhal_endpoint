@@ -18,7 +18,7 @@ configuration = {
     "COMPRESSION_TYPE": 5,
     "REMOTE_REDIS_HOST": "",
     "REMOTE_REDIS_PORT": 6379,
-    "REMOTE_REDIS_DB": 8,
+    "REMOTE_REDIS_DB": 1,
     "LOCAL_HOST": "0.0.0.0",
     "LOCAL_UDP_PORT_SYSLOG": 514,
     "LOCAL_TLS_PORT_SYSLOG": 6514
@@ -27,7 +27,7 @@ configuration = {
 one_second = 1000000000  # 1 sec = 1000000000 nanoseconds
 
 beginning_of_time_interval = ""
-data_block = {"dt": [], "ip": [], "endpoint": [], "raw_message": []}
+data_block_template = {"dt": [], "ip": [], "endpoint": [], "raw_message": []}
 data_increment = 0
 endpoint_name = ""
 
@@ -45,7 +45,6 @@ def load_configuration():
     global configuration
 
     try:
-        configuration['REMOTE_REDIS_HOST'] = os.getenv('REMOTE_REDIS_HOST')
         load_env_variable("TRANSMISSION_INTERVAL")
         load_env_variable("COMPRESSION_TYPE")
         load_env_variable("REMOTE_REDIS_HOST")
@@ -69,21 +68,14 @@ def redis_connect(redis):
     return redis_connection
 
 
-def break_pri(pos):
-    for facility in range(24):
-        for severity in range(8):
-            pri = (facility * 8) + severity
-            if pos[0] == str(pri):
-                return facility, severity
-    return 0, 0
-
-
 class SyslogHandler(socketserver.BaseRequestHandler):
     def handle(self):
         global beginning_of_time_interval
-        global data_block
+        global data_block_template
         global endpoint_name
         global configuration
+
+        data_block = data_block_template
 
         raw_message_data = bytes.decode(self.request[0].strip())
 
@@ -98,19 +90,18 @@ class SyslogHandler(socketserver.BaseRequestHandler):
                 data_block["ip"].append(self.client_address[0])
                 data_block["raw_message"].append(str(raw_message_data))
                 data_block["endpoint"].append(endpoint_name)
+                raw_message_data = ""
         else:
-            packed_message = msgpack.packb([data_block], use_bin_type=True)
-            packed_message = msgpack.packb([data_block], use_bin_type=True)
-            compressed_message = zlib.compress(
-                packed_message, configuration["COMPRESSION_TYPE"])
-            r.rpush('raw_message_block', compressed_message)
-            beginning_of_time_interval = time.monotonic_ns()
-            data_block = {
-                "dt": [],
-                "ip": [],
-                "endpoint": [],
-                "raw_message": []
-            }
+            if len(data_block['dt']) > 0:
+                packed_message = msgpack.packb([data_block], use_bin_type=True)
+
+                compressed_message = zlib.compress(
+                    packed_message, configuration["COMPRESSION_TYPE"])
+
+                r.rpush('raw_message_block', compressed_message)
+
+                beginning_of_time_interval = time.monotonic_ns()
+                data_block = data_block_template
 
 
 class ThreadingUDPServer(ThreadingMixIn, UDPServer):
