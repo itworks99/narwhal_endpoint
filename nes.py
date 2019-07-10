@@ -2,7 +2,7 @@ import socket
 import socketserver
 import threading
 import time
-import zlib
+import zstd
 from datetime import datetime
 from socketserver import TCPServer, ThreadingMixIn, UDPServer
 import os
@@ -15,7 +15,7 @@ DASH_LINE = "-----------------------------------------------------------------"
 
 configuration = {
     "TRANSMISSION_INTERVAL": 1,
-    "COMPRESSION_TYPE": 5,
+    "COMPRESSION_TYPE": 3,
     "REMOTE_REDIS_HOST": "192.168.1.14",
     "REMOTE_REDIS_PORT": 6379,
     "REMOTE_REDIS_DB": 1,
@@ -102,7 +102,7 @@ class SyslogHandler(socketserver.BaseRequestHandler):
         if time_passed > send_data_interval:
             packed_message = msgpack.packb([data_block], use_bin_type=True)
 
-            compressed_message = zlib.compress(
+            compressed_message = zstd.compress(
                 packed_message, configuration["COMPRESSION_TYPE"])
             r.rpush('raw_message_block', compressed_message)
             beginning_of_time_interval = time.monotonic_ns()
