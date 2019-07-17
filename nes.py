@@ -29,7 +29,7 @@ send_data_interval = configuration["TRANSMISSION_INTERVAL"] * \
     one_second
 
 beginning_of_time_interval = ""
-data_block_template = {"dt": [], "ip": [], "endpoint": [], "raw_message": []}
+data_block_template = {"dt": [], "ip": [], "ep": [], "ms": []}
 data_increment = 0
 endpoint_name = ""
 data_block = data_block_template
@@ -95,8 +95,8 @@ class SyslogHandler(socketserver.BaseRequestHandler):
 
             data_block["dt"].append(dt)
             data_block["ip"].append(self.client_address[0])
-            data_block["raw_message"].append(str(raw_message_data))
-            data_block["endpoint"].append(endpoint_name)
+            data_block["ep"].append(endpoint_name)
+            data_block["ms"].append(str(raw_message_data))
             raw_message_data = ""
 
         if time_passed > send_data_interval:
@@ -108,8 +108,8 @@ class SyslogHandler(socketserver.BaseRequestHandler):
             beginning_of_time_interval = time.monotonic_ns()
             data_block["dt"].clear()
             data_block["ip"].clear()
-            data_block["raw_message"].clear()
-            data_block["endpoint"].clear()
+            data_block["ep"].clear()
+            data_block["ms"].clear()
 
 
 class ThreadingUDPServer(ThreadingMixIn, UDPServer):
