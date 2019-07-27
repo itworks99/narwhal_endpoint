@@ -29,7 +29,7 @@ send_data_interval = configuration["TRANSMISSION_INTERVAL"] * \
     one_second
 
 beginning_of_time_interval = ""
-data_block_template = {"dt": [], "ip": [], "ep": [], "ms": []}
+data_block_template = {"ip": [], "ep": [], "ms": []}
 data_increment = 0
 endpoint_name = ""
 data_block = data_block_template
@@ -93,7 +93,6 @@ class SyslogHandler(socketserver.BaseRequestHandler):
 
         if time_passed < send_data_interval:
 
-            data_block["dt"].append(dt)
             data_block["ip"].append(self.client_address[0])
             data_block["ep"].append(endpoint_name)
             data_block["ms"].append(str(raw_message_data))
@@ -104,9 +103,8 @@ class SyslogHandler(socketserver.BaseRequestHandler):
 
             compressed_message = zstd.compress(
                 packed_message, configuration["COMPRESSION_TYPE"])
-            r.rpush('raw_message_block', compressed_message)
+            redis_cache_db.hset('raw_message_block', dt, compressed_message)
             beginning_of_time_interval = time.monotonic_ns()
-            data_block["dt"].clear()
             data_block["ip"].clear()
             data_block["ep"].clear()
             data_block["ms"].clear()
@@ -133,10 +131,10 @@ if __name__ == "__main__":
         server = []
         server_thread = []
 
-        r = redis_connect(redis)
+        redis_cache_db = redis_connect(redis)
 
         try:
-            response = r.client_list()
+            response = redis_cache_db.client_list()
             connected_to_redis = True
             print("Connected to Redis on " +
                   configuration["REMOTE_REDIS_HOST"] + ". Listening on ports:")
